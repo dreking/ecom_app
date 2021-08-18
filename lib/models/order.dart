@@ -1,30 +1,28 @@
 import 'package:ecommerce/models/product.dart';
-import 'package:ecommerce/models/user.dart';
 
 class Order {
   String? id;
-  User? user;
   List<Product>? products;
+  double? total;
   DateTime? createdAt;
 
   Order({
     this.id,
-    this.user,
     this.products,
     this.createdAt,
+    this.total,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
-    final user = User.fromJson(json['userid']);
-    final List<Product> products = json['products']
-        .cast<Map<String, dynamic>>()
-        .map<Product>((product) => Product.fromJson(json))
+    final productsJson = json['products'].cast<Map<String, dynamic>>();
+    final products = productsJson
+        .map<Product>((json) => Product.fromServerJson(json))
         .toList();
 
     return Order(
       id: json['_id'] as String,
-      user: user,
-      products: products,
+      products: [...products],
+      total: json['total'].toDouble(),
       createdAt: DateTime.parse(json['createdAt']),
     );
   }
